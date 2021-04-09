@@ -5,6 +5,8 @@
 __author__ = "Mike.Salzarulo"
 
 from data import FILES
+from output import _this as output_fldr
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -68,13 +70,22 @@ def main():
     # income
     fig, ax = plt.subplots()
     rects = df.hist(column="income", bins=2, ax=ax, grid=False, ec="k")
-    # rects[-2].set_fc("r")
-    ax.patches[-1].set_fc("r")
+    rects[-1].set_fc("gainsboro")
+    ax.patches[-1].set_fc("k")
+    ax.patches[-1].set_ec("b")
+    ax.annotate(">50K", xy=(ax.patches[-1].get_x() + ax.patches[-1].get_width()/2, ax.patches[-2].get_height()/2), xytext=(0, 0), textcoords="offset points",
+                verticalalignment='center', color="k", clip_on=True, weight="bold")
+    ax.patches[-2].set_fc("w")
+    ax.patches[-2].set_ec("b")
+    ax.annotate("<=50K", xy=(ax.patches[-2].get_x() + ax.patches[-2].get_width() / 2, ax.patches[-2].get_height() / 2),
+                xytext=(0, 0), textcoords="offset points",
+                verticalalignment='center', color="k", clip_on=True, weight="bold")
     ax.set_xticks(np.linspace(df.income.min(), df.income.max(), 3, dtype=np.uint8))
     ax.set_xlabel("Income Bin")
     ax.set_ylabel("Number in bin")
     ax.set_title("Distribution of Income")
     plt.show(block=False)
+    plt.savefig(output_fldr / "Income.png")
 
     # age
     fig, ax = plt.subplots()
@@ -84,6 +95,7 @@ def main():
     ax.set_ylabel("Number in bin")
     ax.set_title("Distribution of Age")
     plt.show(block=False)
+    plt.savefig(output_fldr / "Age distrobution.png")
 
     # This was tricky to view categorical data as a single variable
     # I needed to unpack the catagories and the count of each occurance
@@ -114,7 +126,8 @@ def main():
         rect_labels.append(label)
 
     ax.set_title("Distribution of People by Workclass")
-    plt.show()
+    plt.show(block=False)
+    plt.savefig(output_fldr / "Workclass distrobution.png")
 
     # ====
     # End single variable visualization
@@ -123,6 +136,10 @@ def main():
     # ====
     # multi-variable visualization
     # ====
+
+    # age to income
+    # working class to income
+    # age to working class to income
 
     # todo: next steps here
 
