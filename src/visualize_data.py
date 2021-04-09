@@ -32,6 +32,30 @@ mpl.RcParams.update({"figure.facecolor": "k", "axes.edgecolor": "w"})
 # 13 None   - hours per week
 # 14 None   - native country
 
+def multi_var(df):
+    # ====
+    # multi-variable visualization
+    # ====
+
+    # age to income
+    df["bins"] = pd.cut(df.age.values, bins=10)
+    groups = df.groupby([df.bins, df.income])
+    fig, ax = plt.subplots(figsize=(12, 10))
+    mosaic(groups.size(), title="Age vs Income", ax=ax, label_rotation=45, labelizer=lambda K: "")
+    plt.savefig(output_fldr / "age vs income.png")
+    plt.show(block=False)
+
+    # working class to income
+    groups = df.groupby([df.workingclass, df.income])
+    fig, ax = plt.subplots(figsize=(12, 10))
+    mosaic(groups.size(), title="Workingclass vs Income", ax=ax, labelizer=lambda K: "", label_rotation=45)
+    plt.savefig(output_fldr / "working class vs income.png")
+    plt.show()
+
+    # ====
+    # End multi-variable visualization
+    # ====
+
 def single_var(df):
     # ====
     # single variable visualization
@@ -136,28 +160,9 @@ def main():
     # Read in data
     df = pd.read_csv(working_path, names=headers)
 
-    # single_var(df)
-
-    # ====
-    # multi-variable visualization
-    # ====
-
-    # age to income
-    df["bins"] = pd.cut(df.age.values, bins=10)
-    groups = df.groupby([df.bins, df.income])
-    fig, ax = plt.subplots(figsize=(12,10))
-    mosaic(groups.size(), title="Age vs Income", ax=ax, label_rotation=45,labelizer=lambda K:"")
-    plt.savefig(output_fldr / "age vs income.png")
-    plt.show()
-    # working class to income
-    # age to working class to income
-
-    # todo: next steps here
-
-    # ====
-    # End multi-variable visualization
-    # ====
-
+    # generate and save visualizations
+    single_var(df)
+    multi_var(df)
     return
 
 
