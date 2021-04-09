@@ -11,6 +11,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from statsmodels.graphics.mosaicplot import mosaic
 
 mpl.RcParams.update({"figure.facecolor": "k", "axes.edgecolor": "w"})
 
@@ -31,40 +32,12 @@ mpl.RcParams.update({"figure.facecolor": "k", "axes.edgecolor": "w"})
 # 13 None   - hours per week
 # 14 None   - native country
 
-def main():
-    # Reserve adult.test explusively for testing
-
-    # Grab adult.data for visualizations
-    for path in FILES:
-        if "adult.data" in path.name:
-            working_path = path
-
-    # Generate headers
-    headers = ["age",
-               "workingclass",
-               "fnlwgt",
-               "education",
-               "education_num",
-               "marital_status",
-               "occupation",
-               "relationship",
-               "race",
-               "sex",
-               "capital_gain",
-               "capital_loss",
-               "hours_per_week",
-               "native_country",
-               "income"]
-
-    # Read in data
-    df = pd.read_csv(working_path, names=headers)
-
-    # Convert the income column to boolian values
-    df.income = (df.income == " >50K") * 1
-
+def single_var(df):
     # ====
     # single variable visualization
     # ====
+    # Convert the income column to boolian values
+    df.income = (df.income == " >50K") * 1
 
     # show histograms of income and age
     # income
@@ -73,7 +46,8 @@ def main():
     rects[-1].set_fc("gainsboro")
     ax.patches[-1].set_fc("k")
     ax.patches[-1].set_ec("b")
-    ax.annotate(">50K", xy=(ax.patches[-1].get_x() + ax.patches[-1].get_width()/2, ax.patches[-2].get_height()/2), xytext=(0, 0), textcoords="offset points",
+    ax.annotate(">50K", xy=(ax.patches[-1].get_x() + ax.patches[-1].get_width() / 2, ax.patches[-2].get_height() / 2),
+                xytext=(0, 0), textcoords="offset points",
                 verticalalignment='center', color="k", clip_on=True, weight="bold")
     ax.patches[-2].set_fc("w")
     ax.patches[-2].set_ec("b")
@@ -133,11 +107,48 @@ def main():
     # End single variable visualization
     # ====
 
+
+def main():
+    # Reserve adult.test explusively for testing
+
+    # Grab adult.data for visualizations
+    for path in FILES:
+        if "adult.data" in path.name:
+            working_path = path
+
+    # Generate headers
+    headers = ["age",
+               "workingclass",
+               "fnlwgt",
+               "education",
+               "education_num",
+               "marital_status",
+               "occupation",
+               "relationship",
+               "race",
+               "sex",
+               "capital_gain",
+               "capital_loss",
+               "hours_per_week",
+               "native_country",
+               "income"]
+
+    # Read in data
+    df = pd.read_csv(working_path, names=headers)
+
+    # single_var(df)
+
     # ====
     # multi-variable visualization
     # ====
 
     # age to income
+    df["bins"] = pd.cut(df.age.values, bins=10)
+    groups = df.groupby([df.bins, df.income])
+    fig, ax = plt.subplots(figsize=(12,10))
+    mosaic(groups.size(), title="Age vs Income", ax=ax, label_rotation=45,labelizer=lambda K:"")
+    plt.savefig(output_fldr / "age vs income.png")
+    plt.show()
     # working class to income
     # age to working class to income
 
